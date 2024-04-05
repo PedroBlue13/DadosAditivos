@@ -3,7 +3,7 @@ from openpyxl import Workbook, load_workbook
 from tkinter import messagebox
 
 
-caminho = "C:\\Users\\pedro.cordeiro\\OneDrive - AF\\Área de Trabalho\\teste\\aditivos.xlsx"
+caminho = "OCULTO"
 
 
 
