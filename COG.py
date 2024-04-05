@@ -3,8 +3,8 @@ from openpyxl import Workbook, load_workbook
 from tkinter import messagebox
 
 
-caminho = "C:\\Users\\pedro.cordeiro\\OneDrive - AF\\Área de Trabalho\\teste\\aditivos.xlsx"
-caminho2 = "C:\\Users\\pedro.cordeiro\\OneDrive - AF\\Área de Trabalho\\teste\\aditivospesquisa.xlsx"
+caminho = "Oculto"
+caminho2 = "Oculto"
 
 
 def open_block_1():
