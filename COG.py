@@ -3,8 +3,8 @@ from openpyxl import Workbook, load_workbook
 from tkinter import messagebox
 
 
-caminho = "OCULTO"
-
+caminho = "C:\\Users\\pedro.cordeiro\\OneDrive - AF\\Área de Trabalho\\teste\\aditivos.xlsx"
+caminho2 = "C:\\Users\\pedro.cordeiro\\OneDrive - AF\\Área de Trabalho\\teste\\aditivospesquisa.xlsx"
 
 
 def open_block_1():
@@ -12,7 +12,6 @@ def open_block_1():
     app.geometry("550x680")
     app.title("Consulta de Equipamentos")
 
-    # Dicionário para armazenar as seções e as entradas de texto
     sections = {
         "Propriedade": ["Aditivo", "Patrimônio", "Chamado", "Colaborador", "E-mail do colaborador"],
         "Recebimento": ["Rua", "Número", "Bairro", "Estado", "Cidade", "Responsável"],
@@ -27,7 +26,6 @@ def open_block_1():
         title_label = ctk.CTkLabel(section_frame, text=section_title, height=25, fg_color="#3BB1A3", text_color="#FFFFFF", corner_radius=10)
         title_label.pack(side='top', fill='x', padx=10, pady=5)
 
-        #bg das sections
         entry_grid_frame = ctk.CTkFrame(section_frame, fg_color="#E1D5E7", corner_radius=10)
         entry_grid_frame.pack(padx=10, pady=5, fill='both', expand=True)
 
@@ -40,18 +38,34 @@ def open_block_1():
 
         return section
 
-    sections_keys = []
-    for field_names in sections.values():
-        sections_keys.extend(field_names)
+    current_row = 0
+    for title, fields in sections.items():
+        sections[title] = create_section(app, title, fields, current_row)
+        current_row += 1
 
-    def search_data(file_path):
+    def save_search_results(results):
+        result_wb = Workbook()
+        result_ws = result_wb.active
+
+        headers = [field for fields in sections.values() for field in fields]
+        result_ws.append(headers)
+
+        for row in results:
+            result_ws.append(row)
+
+        save_path = caminho2
+        result_wb.save(save_path)
+        messagebox.showinfo("Sucesso", f"Resultados da pesquisa salvos em {save_path}")
+
+    def search_data():
         try:
-            wb = load_workbook(file_path)
+            wb = load_workbook(caminho)
             ws = wb.active
         except FileNotFoundError:
             messagebox.showerror("Erro", "Arquivo não encontrado!")
             return
 
+        sections_keys = [field for fields in sections.values() for field in fields]
         search_criteria = {}
         for section in sections.values():
             for field_name, entry_widget in section.items():
@@ -59,27 +73,17 @@ def open_block_1():
                 if value:
                     search_criteria[field_name] = value
 
-        for row in ws.rows:
-            match = True
-            for field_name, value in search_criteria.items():
-                if str(row[sections_keys.index(field_name)].value) != value:
-                    match = False
-                    break
-            if match:
-                print([cell.value for cell in row])
+        results = []
+        for row in ws.iter_rows(values_only=True):
+            if all(str(row[sections_keys.index(field_name)]) == value for field_name, value in search_criteria.items()):
+                results.append(row)
 
-    def search_data_wrapper():
-        file_path = caminho
-        search_data(file_path)
+        if results:
+            save_search_results(results)
+        else:
+            messagebox.showinfo("Pesquisa", "Nenhum dado correspondente encontrado.")
 
-       
-
-    current_row = 0
-    for title, fields in sections.items():
-        sections[title] = create_section(app, title, fields, current_row)
-        current_row += 1
-
-    search_button = ctk.CTkButton(app, text="Pesquisar", command=search_data_wrapper, fg_color="#3BB1A3", text_color="white", corner_radius=10)
+    search_button = ctk.CTkButton(app, text="Pesquisar", command=search_data, fg_color="#3BB1A3", text_color="white", corner_radius=10)
     search_button.grid(row=current_row, column=0, columnspan=4, padx=20, pady=20, sticky="we")
 
     app.mainloop()
