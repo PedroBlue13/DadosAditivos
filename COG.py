@@ -1,10 +1,10 @@
 import customtkinter as ctk
 from openpyxl import Workbook, load_workbook
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
+import os
 
-
-caminho = "Oculto"
-caminho2 = "Oculto"
+caminho = "C:\\Users\\pedro.cordeiro\\OneDrive - AF\\Área de Trabalho\\teste\\aditivos.xlsx"
+caminho2 = "C:\\Users\\pedro.cordeiro\\OneDrive - AF\\Área de Trabalho\\teste\\aditivospesquisa.xlsx"
 
 
 def open_block_1():
@@ -178,6 +178,22 @@ def main():
     app = ctk.CTk()
     app.geometry("400x160")
     app.title("Dados Aditivos")
+
+    def select_directory():
+        selected_directory = filedialog.askdirectory()
+        if selected_directory:
+            base_path = os.path.join(selected_directory, "DadosAditivos")
+            if not os.path.exists(base_path):
+                os.makedirs(base_path)
+            global caminho
+            global caminho2
+            caminho = os.path.join(base_path, "aditivos.xlsx")
+            caminho2 = os.path.join(base_path, "aditivospesquisa.xlsx")
+            messagebox.showinfo("Pasta Selecionada", f"Projeto baseado em: {base_path}")
+
+    select_button = ctk.CTkButton(app, text="Selecionar Caminho", command=select_directory)
+    select_button.pack(pady=10)
+
 
     button_block_1 = ctk.CTkButton(app, text="Pesquisar Aditivos", command=open_block_1)
     button_block_1.pack(pady=20)
